@@ -1,0 +1,5 @@
+.pdf
+
+.exe
+
+hello_omp.c
