@@ -1,0 +1,73 @@
+Author Preston Porter
+Class CS404
+Homework 1 
+
+References 
+https://www.cs.auckland.ac.nz/references/unix/digital/AQTLTBTE/DOCU_056.HTM
+https://www.tutorialspoint.com/c_standard_library/c_function_strtod.htm
+https://www.tutorialspoint.com/cprogramming/c_multi_dimensional_arrays.htm
+http://www.cplusplus.com/reference/clibrary/
+https://www.programiz.com/c-programming/c-file-input-output
+https://www.geeksforgeeks.org/rand-and-srand-in-ccpp/
+https://www.techiedelight.com/find-execution-time-c-program/
+https://people.sc.fsu.edu/~jburkardt/c_src/hello_openmp/hello_openmp.c
+https://people.sc.fsu.edu/~jburkardt/c_src/hello_openmp/hello_openmp.html
+http://pages.tacc.utexas.edu/~eijkhout/pcse/html/omp-loop.html
+https://computing.llnl.gov/tutorials/openMP/
+
+
+	The most difficult part about the assingment in my opinon was running the matrix multiplication in parallel. Somtimes the parallel version would be faster
+but often times the serialized version would be faster. I know in theory that the parallel version is supposed to be faster but this was my first assignment using
+parallel programming and OpenMP and I was not sure why the serialized version was running faster. 
+	
+	I planned to approach this assignment by first assigning the n , p , and m variables correctly. The size of the matrices is dependent on these variables. Once I got the variables
+assigned either based on 1, 2 or 3 arguments I started to initialize matrices A and B and then multiply them to make matrix C. After this step I had to output this data to a text file. 
+After this step was completed and done serialized I had to do this in parallel.
+Then I realized I had to 0 out the matrix C before multiplying again in either serial or parallel to get the same result. Then I had to get the time of the matrix multiplication in serial and parallel and 
+print out the difference. To do this i used the gettimeofday() command. I had to use the gettimeofday() command instead of other functions because other functions used the CPU time and this used the wall clock
+time.
+After this step was completed I assigned random variables to the A and B matrices.
+
+	I was able to learn more about parallel programming and OpenMP. At first the parallel version of my code was not working correctly due to racing conditions. I had to 
+figure out how to get it to operate to avoid racing conditions. I learned that if you use the #pragma omp for collapse() command , it might not work properly if you have code outside
+of the middle for loop  in the other for loops such as
+
+for ()
+	{
+	
+	for (){
+		
+		for ()
+			{
+				 code 
+			}
+			
+			code //this code would throw an error in the C compiler complaining that the for loops were not 'perfectly nested' 
+		}
+	}	
+
+I had to change it to be 
+
+for ()
+	{
+	
+	for (){
+		
+		for ()
+			{
+				 code  //code only in the middle for loop 
+			}
+			
+			
+		}
+	}	
+
+	I also learned of certain OpenMP commands. The clause #pragma omp lastPrivate() found in https://computing.llnl.gov/tutorials/openMP/ 
+would make sure that only the C matrix from the last thread  would update it. Without this clause multiple threads would be updating the C matrix giving it an inaccurate result of the matrix multpication.
+I made sure the matrices were multipling correctly by  before initializing the matrices to random values  but instead I would initialize the entries of the A and B matrix to 1 to make sure the C value was 
+correct. At first the parallel code would multiply A and B for the number of threads being used. For example I have 8 threads being used on my computer and A and B would be multiplied 8 times and added to the
+C entry. Using the lastPrivate() clause only the last thread ran would update the C entry giving the correct result. Also the clause #pragma omp critical would help it avoid racing conditions by making sure that 
+line would only be used by one thread at a time.
+
+The time complexity overall is big O of n^3 
+O(n^3). This is because of the 3 for loops.
